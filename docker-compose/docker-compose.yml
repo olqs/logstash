@@ -1,5 +1,3 @@
-version: '3.3'
-
 services:
   filebeat:
     image: docker.elastic.co/beats/filebeat:$ELK_VERSION
@@ -23,6 +21,7 @@ services:
       - type: volume
         source: elasticsearch
         target: /usr/share/elasticsearch/data
+#      - /data/logstash/elasticsearch:/usr/share/elasticsearch/data 
     ports:
       - "9200:9200"
     environment:
@@ -44,9 +43,15 @@ services:
         target: /usr/share/logstash/config/logstash.yml
         read_only: true
       - type: bind
+        source: ./logstash/entrypoint.sh
+        target: /entrypoint.sh
+        read_only: true
+      - type: bind
         source: ../logstash.conf
         target: /usr/share/logstash/pipeline/logstash.conf
         read_only: true
+    entrypoint:
+      - "/entrypoint.sh"
     ports:
       - "5400:5400"
     environment:
@@ -96,3 +101,4 @@ services:
 
 volumes:
   elasticsearch:
+
